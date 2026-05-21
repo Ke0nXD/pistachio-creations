@@ -446,7 +446,7 @@ function mascotClick() {
   bubble.classList.add('visible');
   clearTimeout(window._mascotTimer);
   clearTimeout(window._mascotReactTimer);
-  window._mascotReactTimer = setTimeout(() => mascot.classList.remove('booped'), 900);
+  window._mascotReactTimer = setTimeout(() => mascot.classList.remove('booped'), 3200);
   window._mascotTimer = setTimeout(() => bubble.classList.remove('visible'), 2800);
 }
 

@@ -24,21 +24,13 @@
 <button id="lang-btn" onclick="toggleLang()"><span class="nav-icon lang-icon" aria-hidden="true"></span><span id="lang-label">EN</span></button>
 
 <!-- MASCOT -->
-<div id="mascot" onclick="mascotClick()">
-  <div class="speech-bubble" id="speech-bubble"></div>
+<button id="mascot" class="mascot-button" type="button" onclick="mascotClick()" aria-label="Interagir com o mascote">
+  <span class="speech-bubble" id="speech-bubble"></span>
   <span class="mascot-body" aria-hidden="true">
-    <span class="mascot-tail"></span>
-    <span class="mascot-torso"></span>
-    <span class="mascot-head">
-      <span class="mascot-ear mascot-ear-left"></span>
-      <span class="mascot-ear mascot-ear-right"></span>
-      <span class="mascot-eye mascot-eye-left"></span>
-      <span class="mascot-eye mascot-eye-right"></span>
-      <span class="mascot-nose"></span>
-    </span>
-    <span class="mascot-paw"></span>
+    <img class="mascot-img mascot-img-normal" src="assets/mascot-normal.png" alt="">
+    <img class="mascot-img mascot-img-boop" src="assets/mascot-boop.png" alt="">
   </span>
-</div>
+</button>
 
 <div id="app">
 
@@ -48,18 +40,8 @@
       <div class="main-card">
         <div class="profile-wrap">
           <div class="profile-pic">
-            <div class="profile-pic-placeholder" aria-label="Mascote Pistachio">
-              <span class="avatar-art" aria-hidden="true">
-                <span class="avatar-ear avatar-ear-left"></span>
-                <span class="avatar-ear avatar-ear-right"></span>
-                <span class="avatar-face">
-                  <span class="avatar-eye avatar-eye-left"></span>
-                  <span class="avatar-eye avatar-eye-right"></span>
-                  <span class="avatar-nose"></span>
-                  <span class="avatar-mouth"></span>
-                  <span class="avatar-paw"></span>
-                </span>
-              </span>
+            <div class="profile-pic-placeholder profile-pic-image" aria-label="Mascote Pistachio">
+              <img class="profile-avatar-img" src="assets/profile-icon.jpeg" alt="Mascote Pistachio">
             </div>
           </div>
         </div>
@@ -123,18 +105,8 @@
       <div class="main-card">
         <div class="profile-wrap">
           <div class="profile-pic">
-            <div class="profile-pic-placeholder" aria-label="Pistachio mascot">
-              <span class="avatar-art" aria-hidden="true">
-                <span class="avatar-ear avatar-ear-left"></span>
-                <span class="avatar-ear avatar-ear-right"></span>
-                <span class="avatar-face">
-                  <span class="avatar-eye avatar-eye-left"></span>
-                  <span class="avatar-eye avatar-eye-right"></span>
-                  <span class="avatar-nose"></span>
-                  <span class="avatar-mouth"></span>
-                  <span class="avatar-paw"></span>
-                </span>
-              </span>
+            <div class="profile-pic-placeholder profile-pic-image" aria-label="Pistachio mascot">
+              <img class="profile-avatar-img" src="assets/profile-icon.jpeg" alt="Pistachio mascot">
             </div>
           </div>
         </div>

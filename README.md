@@ -9,6 +9,9 @@ Site estatico para links, status de comissoes e apresentacao do projeto Pistachi
 - `style.css`: visual, layout responsivo, icones e mascote.
 - `script.js`: idioma, musica, interacoes, particulas e admin local.
 - `Fundo.png`: imagem de fundo.
+- `assets/mascot-normal.png`: mascote no estado normal.
+- `assets/mascot-boop.png`: mascote quando recebe clique/interacao.
+- `assets/profile-icon.jpeg`: imagem usada na foto de perfil.
 
 ## Admin local
 
