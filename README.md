@@ -52,6 +52,8 @@ http://127.0.0.1:8765/
 
 ## Deploy no GitHub Pages
 
+Importante: em contas/planos que nao suportam GitHub Pages para repositorios privados, deixe o repositorio como publico antes de habilitar o Pages.
+
 1. Suba este projeto para um repositorio no GitHub.
 2. No repositorio, abra `Settings`.
 3. Entre em `Pages`.
