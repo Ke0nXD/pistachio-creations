@@ -2736,44 +2736,47 @@ body {
 }
 
 #particles-canvas {
-  opacity: 0.42;
+  opacity: 0.72;
 }
 
 .click-particle {
-  width: 13px;
-  height: 13px;
-  opacity: 0.85;
+  width: 22px;
+  height: 22px;
+  opacity: 1;
   filter: drop-shadow(0 2px 3px rgba(45, 26, 56, 0.18));
 }
 
 .click-particle.shape-heart::before,
 .click-particle.shape-heart::after {
-  width: 9px;
-  height: 14px;
-  top: 1px;
-  left: 6px;
+  width: 13px;
+  height: 20px;
+  top: 2px;
+  left: 10px;
+  background: linear-gradient(145deg, #8be85c, #d9ffc6) !important;
 }
 
 .click-particle.shape-heart::after {
-  left: 0;
+  left: 2px;
 }
 
 .click-particle.shape-paw::before {
-  left: 4px;
-  top: 8px;
-  width: 9px;
-  height: 7px;
+  left: 6px;
+  top: 12px;
+  width: 13px;
+  height: 10px;
+  background: linear-gradient(145deg, #ff78b4, #ffd0e4) !important;
 }
 
 .click-particle.shape-paw::after {
-  left: 1px;
-  top: 2px;
-  width: 5px;
-  height: 5px;
+  left: 2px;
+  top: 3px;
+  width: 7px;
+  height: 7px;
+  background: #ff78b4 !important;
   box-shadow:
-    6px -2px 0 #c989ff,
-    12px 0 0 #ff91bf,
-    4px 5px 0 #c9f7a8;
+    8px -3px 0 #ffacd0,
+    17px 0 0 #ff78b4,
+    6px 8px 0 #ffd0e4;
 }
 
 .main-card {

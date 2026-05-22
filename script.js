@@ -521,19 +521,18 @@ function playClick() {
    ===================================================== */
 const PARTICLE_SHAPES = ['shape-heart', 'shape-paw'];
 document.addEventListener('click', function(e) {
-  if (e.target.closest('#music-btn, #lang-btn, .back-btn, button')) {
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => spawnParticle(e.clientX, e.clientY), i * 60);
-    }
+  if (e.target.closest('#admin-panel input, #admin-panel label')) return;
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => spawnParticle(e.clientX, e.clientY), i * 45);
   }
 });
 function spawnParticle(x, y) {
   const p = document.createElement('div');
   const shape = PARTICLE_SHAPES[Math.floor(Math.random() * PARTICLE_SHAPES.length)];
   p.className = `click-particle ${shape}`;
-  p.style.left = (x + (Math.random()-0.5)*22) + 'px';
+  p.style.left = (x + (Math.random()-0.5)*28) + 'px';
   p.style.top = y + 'px';
-  p.style.animationDuration = (0.55 + Math.random() * 0.25) + 's';
+  p.style.animationDuration = (0.75 + Math.random() * 0.3) + 's';
   document.body.appendChild(p);
   setTimeout(() => p.remove(), 1100);
 }
@@ -724,16 +723,16 @@ function initDraggableMascot() {
   resize();
   window.addEventListener('resize', resize);
 
-  const particleCount = window.innerWidth < 720 ? 10 : 18;
+  const particleCount = window.innerWidth < 720 ? 18 : 32;
   for (let i = 0; i < particleCount; i++) {
     particles.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.12,
-      vy: -0.06 - Math.random() * 0.12,
-      size: 5 + Math.random() * 6,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: -0.1 - Math.random() * 0.18,
+      size: 8 + Math.random() * 8,
       shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
-      alpha: 0.1 + Math.random() * 0.18,
+      alpha: 0.28 + Math.random() * 0.34,
       phase: Math.random() * Math.PI * 2,
     });
   }
@@ -798,9 +797,9 @@ function initDraggableMascot() {
   function drawParticle(p, t) {
     const size = p.size * (0.82 + Math.sin(t + p.phase) * 0.12);
     if (p.shape === 'paw') {
-      drawPaw(p.x, p.y, size, makeGradient(p.x, p.y, size, '#9cf070', '#ff91bf', t, p.phase));
+      drawPaw(p.x, p.y, size, makeGradient(p.x, p.y, size, '#ff78b4', '#ffd1e3', t, p.phase));
     } else if (p.shape === 'heart') {
-      drawHeart(p.x, p.y, size, makeGradient(p.x, p.y, size, '#ff78b4', '#9cf070', t, p.phase));
+      drawHeart(p.x, p.y, size, makeGradient(p.x, p.y, size, '#8be85c', '#d8ffbf', t, p.phase));
     } else {
       drawStar(p.x, p.y, size, makeGradient(p.x, p.y, size, '#c989ff', '#9cf070', t, p.phase));
     }
