@@ -3,15 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="0; url=./pistachio-creations.html">
+<meta http-equiv="refresh" content="0; url=./pistachio-creations.html?v=20260522-force2">
 <title>Pistachio & Creations</title>
 <link rel="canonical" href="./pistachio-creations.html">
 <script>
-  const target = `./pistachio-creations.html${window.location.search}${window.location.hash}`;
+  const params = new URLSearchParams(window.location.search);
+  params.set('v', '20260522-force2');
+  const query = params.toString();
+  const target = `./pistachio-creations.html?${query}${window.location.hash}`;
   window.location.replace(target);
 </script>
 </head>
 <body>
-<p>Redirecionando para <a href="./pistachio-creations.html">Pistachio &amp; Creations</a>.</p>
+<p>Redirecionando para <a href="./pistachio-creations.html?v=20260522-force2">Pistachio &amp; Creations</a>.</p>
 </body>
 </html>
