@@ -13,6 +13,7 @@ Site estatico para links, status de comissoes e apresentacao do projeto Pistachi
 - `assets/mascot-normal.png`: mascote no estado normal.
 - `assets/mascot-boop.png`: mascote quando recebe clique/interacao.
 - `assets/profile-icon.jpeg`: imagem usada na foto de perfil.
+- `assets/icons/`: imagens pequenas usadas nos icones do topo, badges, status e botoes.
 
 ## Admin global
 
