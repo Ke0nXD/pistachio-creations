@@ -2391,3 +2391,313 @@ body.admin-mode .admin-open-btn {
     padding: 10px 14px;
   }
 }
+
+/* ===== GREEN / PURPLE IDENTITY REFRESH ===== */
+:root {
+  --pistachio: #8be85c;
+  --pistachio-dark: #4f9635;
+  --pistachio-light: #c9f7a8;
+  --purple: #8c3fe0;
+  --purple-dark: #5b259b;
+  --purple-soft: #ead8ff;
+  --pink: #ff78b4;
+  --pink-light: #ffc2dc;
+  --pink-soft: #fff0f7;
+  --cream: #fffaf1;
+  --bg-overlay: rgba(232, 214, 255, 0.46);
+  --card-bg: rgba(252, 248, 255, 0.72);
+  --text-dark: #382846;
+  --text-mid: #604d76;
+  --shadow-pink: 0 10px 28px rgba(255, 120, 180, 0.2);
+  --shadow-green: 0 10px 28px rgba(124, 218, 86, 0.22);
+}
+
+#app {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(199, 247, 168, 0.44), transparent 34%),
+    radial-gradient(circle at 82% 24%, rgba(180, 126, 244, 0.42), transparent 36%),
+    radial-gradient(circle at 50% 90%, rgba(255, 150, 196, 0.22), transparent 42%),
+    linear-gradient(145deg, #f6ecff 0%, #e4f9d8 36%, #f7edff 68%, #dff7d1 100%);
+  background-size: 160% 160%;
+}
+
+.bg-texture {
+  background-image:
+    radial-gradient(circle at 18% 30%, rgba(140, 63, 224, 0.18) 0%, transparent 38%),
+    radial-gradient(circle at 78% 72%, rgba(139, 232, 92, 0.22) 0%, transparent 40%),
+    url(Fundo.png);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.88;
+}
+
+#music-btn,
+#lang-btn,
+.back-btn,
+.admin-open-btn {
+  border-color: rgba(140, 63, 224, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(235, 255, 221, 0.84));
+  color: var(--purple-dark);
+  box-shadow: 0 10px 24px rgba(91, 37, 155, 0.14);
+}
+
+#music-btn:hover,
+#lang-btn:hover,
+.back-btn:hover,
+.admin-open-btn:hover {
+  border-color: rgba(139, 232, 92, 0.72);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(235, 216, 255, 0.88));
+}
+
+.main-card,
+.gallery-item,
+.about-section,
+.comm-card,
+.inner-status,
+.admin-card {
+  border-color: rgba(255, 255, 255, 0.86);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(235, 216, 255, 0.46)),
+    linear-gradient(135deg, rgba(201, 247, 168, 0.28), rgba(255, 194, 220, 0.2));
+  box-shadow:
+    0 24px 64px rgba(91, 37, 155, 0.16),
+    inset 0 2px 0 rgba(255, 255, 255, 0.78);
+}
+
+.profile-pic {
+  background: linear-gradient(145deg, var(--purple-soft), #efffdc);
+  box-shadow:
+    0 18px 36px rgba(91, 37, 155, 0.24),
+    0 0 0 2px rgba(139, 232, 92, 0.72);
+}
+
+.profile-pic::before,
+.profile-pic::after {
+  background: var(--pistachio-light);
+}
+
+.profile-pic::after {
+  background: var(--purple-soft);
+}
+
+.card-title,
+.inner-title,
+.section-title {
+  color: var(--purple-dark);
+  text-shadow:
+    0 4px 0 rgba(255, 255, 255, 0.96),
+    0 8px 12px rgba(91, 37, 155, 0.18);
+}
+
+.card-subtitle,
+.cute-divider {
+  color: var(--purple);
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.92),
+    0 7px 16px rgba(91, 37, 155, 0.16);
+}
+
+.card-subtitle::before,
+.card-subtitle::after,
+.cute-divider::before,
+.cute-divider::after {
+  background: linear-gradient(135deg, var(--pistachio-light), var(--purple-soft));
+}
+
+.badge,
+.commission-status,
+.inner-status .commission-status {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(238, 222, 255, 0.68));
+  border-color: rgba(140, 63, 224, 0.24);
+  box-shadow:
+    0 16px 30px rgba(91, 37, 155, 0.12),
+    inset 0 2px 0 rgba(255, 255, 255, 0.86);
+}
+
+.badge.green {
+  border-color: rgba(91, 150, 53, 0.34);
+  background: linear-gradient(180deg, rgba(250, 255, 245, 0.94), rgba(225, 255, 202, 0.82));
+}
+
+.comm-item:not(:last-child) {
+  border-color: rgba(140, 63, 224, 0.3);
+}
+
+.comm-text {
+  color: var(--text-dark);
+}
+
+.comm-text span {
+  color: var(--pistachio-dark);
+}
+
+.btn-green,
+.admin-save {
+  background: linear-gradient(180deg, #b9ff8c, #61b83e);
+  box-shadow:
+    0 18px 34px rgba(79, 150, 53, 0.28),
+    inset 0 3px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -5px 0 rgba(44, 97, 30, 0.18);
+}
+
+.btn-pink,
+.admin-reset {
+  background: linear-gradient(180deg, #bc82ff, #7a34d1);
+  box-shadow:
+    0 18px 34px rgba(91, 37, 155, 0.3),
+    inset 0 3px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -5px 0 rgba(66, 25, 120, 0.2);
+}
+
+.social-btn {
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 16px 28px rgba(91, 37, 155, 0.22),
+    0 0 0 4px rgba(139, 232, 92, 0.18),
+    inset 0 3px 0 rgba(255, 255, 255, 0.28);
+}
+
+.btn-discord {
+  background: linear-gradient(135deg, #7f5cff, #4f9635);
+}
+
+.btn-tiktok {
+  background: linear-gradient(135deg, #251535, #8c3fe0 52%, #79df50);
+}
+
+.btn-instagram {
+  background: linear-gradient(135deg, #ff78b4, #8c3fe0 55%, #8be85c);
+}
+
+.icon-heart::before,
+.icon-heart::after,
+.shape-heart::before,
+.shape-heart::after {
+  background: linear-gradient(145deg, #ff78b4 0%, #c989ff 48%, #9cf070 100%);
+}
+
+.icon-paw::before,
+.shape-paw::before {
+  background: linear-gradient(145deg, #9cf070 0%, #b989ff 55%, #ff91bf 100%);
+}
+
+.icon-paw::after,
+.shape-paw::after {
+  background: #9cf070;
+  box-shadow:
+    9px -4px 0 #c989ff,
+    18px 0 0 #ff91bf,
+    5px 8px 0 #c9f7a8;
+}
+
+.icon-clock::before {
+  border-color: var(--pistachio-dark);
+  background:
+    radial-gradient(circle at 50% 50%, var(--purple-dark) 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, #fff8ff 0 58%, transparent 59%),
+    repeating-conic-gradient(from 0deg, rgba(140, 63, 224, 0.42) 0 4deg, transparent 4deg 30deg),
+    #fff8ff;
+  box-shadow: inset 0 0 0 2px rgba(139, 232, 92, 0.45);
+}
+
+.icon-clock::after {
+  background:
+    linear-gradient(var(--purple-dark), var(--purple-dark)) 50% 18% / 3px 38% no-repeat,
+    linear-gradient(90deg, var(--purple-dark), var(--purple-dark)) 50% 52% / 34% 3px no-repeat;
+}
+
+.click-particle.shape-heart::before,
+.click-particle.shape-heart::after {
+  background: linear-gradient(145deg, #ff78b4, #9cf070);
+}
+
+.click-particle.shape-paw::before {
+  background: linear-gradient(145deg, #9cf070, #ff91bf);
+}
+
+.admin-persist-status {
+  margin: 0 0 14px;
+  border: 2px solid rgba(140, 63, 224, 0.22);
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--text-mid);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.admin-persist-status[data-tone="ok"] {
+  border-color: rgba(79, 150, 53, 0.3);
+  color: var(--pistachio-dark);
+}
+
+.admin-persist-status[data-tone="warn"],
+.admin-persist-status[data-tone="saving"] {
+  border-color: rgba(140, 63, 224, 0.34);
+  color: var(--purple-dark);
+}
+
+.admin-persist-status[data-tone="error"] {
+  border-color: rgba(255, 120, 180, 0.42);
+  color: #a93c72;
+}
+
+.admin-card input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 4px rgba(140, 63, 224, 0.16);
+}
+
+.admin-card input:disabled,
+.admin-actions button:disabled {
+  opacity: 0.62;
+}
+
+#mascot {
+  z-index: 2100;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  will-change: left, top, transform;
+}
+
+#mascot:hover:not(.is-dragging) {
+  transform: scale(1.035) translateY(-4px);
+}
+
+#mascot.is-dragging,
+#mascot.is-dragging:hover {
+  z-index: 2400;
+  cursor: grabbing;
+  transform: none;
+  transition: none;
+}
+
+#mascot.is-dragging .mascot-body {
+  animation: none;
+  filter: drop-shadow(0 22px 24px rgba(91, 37, 155, 0.24));
+}
+
+#mascot,
+#mascot *,
+.mascot-img {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.speech-bubble {
+  border-color: rgba(140, 63, 224, 0.34);
+  color: var(--purple-dark);
+  box-shadow: 0 14px 28px rgba(91, 37, 155, 0.15);
+}
+
+.speech-bubble::after {
+  background: linear-gradient(145deg, #ff78b4, #9cf070);
+}
+
+.speech-bubble::before {
+  border-color: rgba(140, 63, 224, 0.24);
+}

@@ -21,7 +21,13 @@ const CONFIG = {
 };
 
 const DEFAULT_CONFIG = { ...CONFIG };
-const ADMIN_STORAGE_KEY = 'pistachio-site-config';
+const CONFIG_FILE = {
+  local: 'site-config.json',
+  remote: 'https://raw.githubusercontent.com/Ke0nXD/pistachio-creations/main/site-config.json',
+  api: 'https://api.github.com/repos/Ke0nXD/pistachio-creations/contents/site-config.json',
+  branch: 'main',
+};
+let configLoadError = null;
 
 /* =====================================================
    LANGUAGE STATE
@@ -65,15 +71,6 @@ function updateBackBtn(page) {
 /* =====================================================
    SITE SETTINGS / ADMIN
    ===================================================== */
-function readSavedConfig() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || '{}');
-    return saved && typeof saved === 'object' ? saved : {};
-  } catch(e) {
-    return {};
-  }
-}
-
 function normalizeNumber(value, fallback, min = 0, max = 99) {
   const number = Number.parseInt(value, 10);
   if (!Number.isFinite(number)) return fallback;
@@ -85,28 +82,122 @@ function normalizeDelivery(value) {
   return raw.replace(/\s*(dias|dia|days|day)$/i, '').trim() || DEFAULT_CONFIG.deliveryDays;
 }
 
-function loadSiteConfig() {
-  Object.assign(CONFIG, DEFAULT_CONFIG, readSavedConfig());
+function normalizeConfig(rawConfig = {}) {
+  const cleanConfig = {
+    commissionOpen: rawConfig.commissionOpen !== false,
+    queueFilled: normalizeNumber(rawConfig.queueFilled, DEFAULT_CONFIG.queueFilled, 0, 99),
+    queueTotal: normalizeNumber(rawConfig.queueTotal, DEFAULT_CONFIG.queueTotal, 1, 99),
+    deliveryDays: normalizeDelivery(rawConfig.deliveryDays),
+    commissionLink: String(rawConfig.commissionLink || DEFAULT_CONFIG.commissionLink).trim(),
+    discord: String(rawConfig.discord || DEFAULT_CONFIG.discord).trim(),
+    tiktok: String(rawConfig.tiktok || DEFAULT_CONFIG.tiktok).trim(),
+    instagram: String(rawConfig.instagram || DEFAULT_CONFIG.instagram).trim(),
+  };
+  cleanConfig.queueFilled = Math.min(cleanConfig.queueFilled, cleanConfig.queueTotal);
+  return cleanConfig;
+}
+
+function getConfigUrl() {
+  const isLocalhost = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+  const source = isLocalhost ? CONFIG_FILE.local : CONFIG_FILE.remote;
+  return `${source}?v=${Date.now()}`;
+}
+
+async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 7000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      cache: 'no-store',
+      ...options,
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function loadSiteConfig() {
+  configLoadError = null;
+  let globalConfig = {};
+  try {
+    globalConfig = await fetchJsonWithTimeout(getConfigUrl());
+  } catch (error) {
+    configLoadError = error;
+    console.warn('Global config not loaded, using defaults.', error);
+  }
+  Object.assign(CONFIG, DEFAULT_CONFIG, normalizeConfig(globalConfig));
   CONFIG.commissionOpen = CONFIG.commissionOpen !== false;
   CONFIG.queueTotal = normalizeNumber(CONFIG.queueTotal, DEFAULT_CONFIG.queueTotal, 1, 99);
   CONFIG.queueFilled = normalizeNumber(CONFIG.queueFilled, DEFAULT_CONFIG.queueFilled, 0, CONFIG.queueTotal);
   CONFIG.deliveryDays = normalizeDelivery(CONFIG.deliveryDays);
 }
 
-function saveSiteConfig(nextConfig) {
-  const cleanConfig = {
-    commissionOpen: nextConfig.commissionOpen !== false,
-    queueFilled: normalizeNumber(nextConfig.queueFilled, DEFAULT_CONFIG.queueFilled, 0, 99),
-    queueTotal: normalizeNumber(nextConfig.queueTotal, DEFAULT_CONFIG.queueTotal, 1, 99),
-    deliveryDays: normalizeDelivery(nextConfig.deliveryDays),
-    commissionLink: String(nextConfig.commissionLink || '').trim(),
-    discord: String(nextConfig.discord || '').trim(),
-    tiktok: String(nextConfig.tiktok || '').trim(),
-    instagram: String(nextConfig.instagram || '').trim(),
+function encodeBase64Utf8(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = '';
+  bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+  return btoa(binary);
+}
+
+async function getConfigFileSha(token) {
+  const res = await fetch(CONFIG_FILE.api, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    cache: 'no-store',
+  });
+  if (res.status === 404) return '';
+  if (!res.ok) throw new Error(`Não foi possível ler site-config.json (HTTP ${res.status}).`);
+  const data = await res.json();
+  return data.sha || '';
+}
+
+async function persistSiteConfig(cleanConfig, token) {
+  const githubToken = String(token || '').trim();
+  if (!githubToken) throw new Error('Informe um token do GitHub para salvar globalmente.');
+  const payload = {
+    ...cleanConfig,
+    updatedAt: new Date().toISOString(),
   };
-  cleanConfig.queueFilled = Math.min(cleanConfig.queueFilled, cleanConfig.queueTotal);
-  localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(cleanConfig));
+  const sha = await getConfigFileSha(githubToken);
+  const body = {
+    message: 'chore: update site config from admin',
+    branch: CONFIG_FILE.branch,
+    content: encodeBase64Utf8(`${JSON.stringify(payload, null, 2)}\n`),
+  };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(CONFIG_FILE.api, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${githubToken}`,
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let detail = `HTTP ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data.message) detail = data.message;
+    } catch(e) {}
+    throw new Error(`Falha ao salvar no GitHub: ${detail}`);
+  }
+  return payload;
+}
+
+async function saveSiteConfig(nextConfig, token) {
+  const cleanConfig = normalizeConfig(nextConfig);
+  const publishedConfig = await persistSiteConfig(cleanConfig, token);
   Object.assign(CONFIG, cleanConfig);
+  return publishedConfig;
 }
 
 function setText(selector, text) {
@@ -136,6 +227,13 @@ function setBadge(selector, text, closed = false) {
   });
 }
 
+function setAdminPersistStatus(text, tone = '') {
+  const status = document.getElementById('admin-persist-status');
+  if (!status) return;
+  status.textContent = text;
+  status.dataset.tone = tone;
+}
+
 function applySiteConfig() {
   const open = CONFIG.commissionOpen !== false;
   const filled = normalizeNumber(CONFIG.queueFilled, DEFAULT_CONFIG.queueFilled, 0, CONFIG.queueTotal);
@@ -161,7 +259,10 @@ function applySiteConfig() {
   setStatusLine('#page-pistachio-pt .inner-status .comm-item:nth-child(3) .comm-text', 'Prazo: ', `${delivery} dias`);
   setStatusLine('#page-pistachio-en .inner-status .comm-item:nth-child(3) .comm-text', 'Delivery: ', `${delivery} days`);
 
-  setText('#admin-status-summary', open ? 'Comissões abertas' : 'Comissões fechadas');
+  const configStatus = configLoadError
+    ? 'Não foi possível carregar site-config.json; usando valores padrão.'
+    : 'Dados globais carregados de site-config.json.';
+  setAdminPersistStatus(configStatus, configLoadError ? 'warn' : 'ok');
 }
 
 function fillAdminForm() {
@@ -182,6 +283,30 @@ function fillAdminForm() {
     if (field.type === 'checkbox') field.checked = !!value;
     else field.value = value || '';
   });
+}
+
+function getAdminToken() {
+  return document.getElementById('admin-github-token')?.value.trim() || '';
+}
+
+function collectAdminConfig() {
+  return {
+    commissionOpen: document.getElementById('admin-commission-open').checked,
+    queueFilled: document.getElementById('admin-queue-filled').value,
+    queueTotal: document.getElementById('admin-queue-total').value,
+    deliveryDays: document.getElementById('admin-delivery-days').value,
+    commissionLink: document.getElementById('admin-commission-link').value,
+    discord: document.getElementById('admin-discord').value,
+    tiktok: document.getElementById('admin-tiktok').value,
+    instagram: document.getElementById('admin-instagram').value,
+  };
+}
+
+function setAdminBusy(isBusy) {
+  document.querySelectorAll('#admin-form button, #admin-form input').forEach(el => {
+    if (el.id !== 'admin-close-btn') el.disabled = isBusy;
+  });
+  document.getElementById('admin-form')?.classList.toggle('is-saving', isBusy);
 }
 
 function openAdminPanel() {
@@ -214,29 +339,43 @@ function initAdmin() {
     if (e.target.id === 'admin-panel') closeAdminPanel();
   });
 
-  form?.addEventListener('submit', e => {
+  form?.addEventListener('submit', async e => {
     e.preventDefault();
-    saveSiteConfig({
-      commissionOpen: document.getElementById('admin-commission-open').checked,
-      queueFilled: document.getElementById('admin-queue-filled').value,
-      queueTotal: document.getElementById('admin-queue-total').value,
-      deliveryDays: document.getElementById('admin-delivery-days').value,
-      commissionLink: document.getElementById('admin-commission-link').value,
-      discord: document.getElementById('admin-discord').value,
-      tiktok: document.getElementById('admin-tiktok').value,
-      instagram: document.getElementById('admin-instagram').value,
-    });
-    applySiteConfig();
-    fillAdminForm();
-    showToast('Configurações salvas.');
+    const token = getAdminToken();
+    setAdminBusy(true);
+    setAdminPersistStatus('Salvando no GitHub...', 'saving');
+    try {
+      await saveSiteConfig(collectAdminConfig(), token);
+      configLoadError = null;
+      applySiteConfig();
+      fillAdminForm();
+      setAdminPersistStatus('Configurações publicadas globalmente.', 'ok');
+      showToast('Configurações publicadas.');
+    } catch (error) {
+      setAdminPersistStatus(error.message, 'error');
+      showToast(error.message);
+    } finally {
+      setAdminBusy(false);
+    }
   });
 
-  resetBtn?.addEventListener('click', () => {
-    localStorage.removeItem(ADMIN_STORAGE_KEY);
-    loadSiteConfig();
-    applySiteConfig();
-    fillAdminForm();
-    showToast('Configurações resetadas.');
+  resetBtn?.addEventListener('click', async () => {
+    const token = getAdminToken();
+    setAdminBusy(true);
+    setAdminPersistStatus('Resetando no GitHub...', 'saving');
+    try {
+      await saveSiteConfig(DEFAULT_CONFIG, token);
+      configLoadError = null;
+      applySiteConfig();
+      fillAdminForm();
+      setAdminPersistStatus('Configurações globais resetadas.', 'ok');
+      showToast('Configurações globais resetadas.');
+    } catch (error) {
+      setAdminPersistStatus(error.message, 'error');
+      showToast(error.message);
+    } finally {
+      setAdminBusy(false);
+    }
   });
 
   document.addEventListener('keydown', e => {
@@ -422,10 +561,24 @@ document.addEventListener('mouseout', e => {
    MASCOT
    ===================================================== */
 const MASCOT_PHRASES = {
-  pt: ['Boop!', 'Obrigadinho pela visita!', 'Você encontrou o cantinho secreto!'],
-  en: ['Boop!', 'Thanks for visiting!', 'You found the cozy corner!'],
+  pt: ['Boop!', 'Pistache gostou do carinho!', 'Você encontrou o cantinho secreto!'],
+  en: ['Boop!', 'Pistache liked that!', 'You found the cozy corner!'],
 };
 let phraseIdx = 0;
+const mascotDrag = {
+  active: false,
+  moved: false,
+  pointerId: null,
+  startX: 0,
+  startY: 0,
+  offsetX: 0,
+  offsetY: 0,
+  nextX: 0,
+  nextY: 0,
+  raf: 0,
+  suppressClick: false,
+};
+
 function getMascotPhrases() {
   const statusPhrase = CONFIG.commissionOpen !== false
     ? { pt: 'Comissões abertas!', en: 'Commissions open!' }
@@ -450,33 +603,148 @@ function mascotClick() {
   window._mascotTimer = setTimeout(() => bubble.classList.remove('visible'), 2800);
 }
 
+function clampMascotPosition(x, y) {
+  const mascot = document.getElementById('mascot');
+  const rect = mascot.getBoundingClientRect();
+  const maxX = Math.max(0, window.innerWidth - rect.width);
+  const maxY = Math.max(0, window.innerHeight - rect.height);
+  return {
+    x: Math.min(maxX, Math.max(0, x)),
+    y: Math.min(maxY, Math.max(0, y)),
+  };
+}
+
+function applyMascotPosition(x, y) {
+  const mascot = document.getElementById('mascot');
+  const pos = clampMascotPosition(x, y);
+  mascot.style.left = `${pos.x}px`;
+  mascot.style.top = `${pos.y}px`;
+  mascot.style.right = 'auto';
+  mascot.style.bottom = 'auto';
+}
+
+function queueMascotPosition() {
+  if (mascotDrag.raf) return;
+  mascotDrag.raf = requestAnimationFrame(() => {
+    mascotDrag.raf = 0;
+    applyMascotPosition(mascotDrag.nextX, mascotDrag.nextY);
+  });
+}
+
+function onMascotPointerDown(event) {
+  if (event.button !== undefined && event.button !== 0) return;
+  const mascot = document.getElementById('mascot');
+  const rect = mascot.getBoundingClientRect();
+  mascotDrag.active = true;
+  mascotDrag.moved = false;
+  mascotDrag.pointerId = event.pointerId;
+  mascotDrag.startX = event.clientX;
+  mascotDrag.startY = event.clientY;
+  mascotDrag.offsetX = event.clientX - rect.left;
+  mascotDrag.offsetY = event.clientY - rect.top;
+  mascotDrag.nextX = rect.left;
+  mascotDrag.nextY = rect.top;
+  mascot.classList.add('is-dragging');
+  mascot.style.left = `${rect.left}px`;
+  mascot.style.top = `${rect.top}px`;
+  mascot.style.right = 'auto';
+  mascot.style.bottom = 'auto';
+  mascot.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+}
+
+function onMascotPointerMove(event) {
+  if (!mascotDrag.active || event.pointerId !== mascotDrag.pointerId) return;
+  const dx = event.clientX - mascotDrag.startX;
+  const dy = event.clientY - mascotDrag.startY;
+  if (Math.hypot(dx, dy) > 4) mascotDrag.moved = true;
+  mascotDrag.nextX = event.clientX - mascotDrag.offsetX;
+  mascotDrag.nextY = event.clientY - mascotDrag.offsetY;
+  queueMascotPosition();
+  event.preventDefault();
+}
+
+function endMascotDrag(event) {
+  if (!mascotDrag.active || event.pointerId !== mascotDrag.pointerId) return;
+  const mascot = document.getElementById('mascot');
+  if (mascotDrag.raf) {
+    cancelAnimationFrame(mascotDrag.raf);
+    mascotDrag.raf = 0;
+    applyMascotPosition(mascotDrag.nextX, mascotDrag.nextY);
+  }
+  mascot.classList.remove('is-dragging');
+  mascot.releasePointerCapture?.(event.pointerId);
+  const wasDrag = mascotDrag.moved;
+  mascotDrag.active = false;
+  mascotDrag.pointerId = null;
+  mascotDrag.suppressClick = true;
+  setTimeout(() => { mascotDrag.suppressClick = false; }, 0);
+  if (!wasDrag && event.type === 'pointerup') mascotClick();
+  event.preventDefault();
+}
+
+function initDraggableMascot() {
+  const mascot = document.getElementById('mascot');
+  if (!mascot) return;
+  mascot.addEventListener('pointerdown', onMascotPointerDown);
+  mascot.addEventListener('pointermove', onMascotPointerMove);
+  mascot.addEventListener('pointerup', endMascotDrag);
+  mascot.addEventListener('pointercancel', endMascotDrag);
+  mascot.addEventListener('click', event => {
+    if (mascotDrag.suppressClick) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    mascotClick();
+  });
+  window.addEventListener('resize', () => {
+    const rect = mascot.getBoundingClientRect();
+    if (mascot.style.left || mascot.style.top) applyMascotPosition(rect.left, rect.top);
+  });
+}
+
 /* =====================================================
    CANVAS PARTICLES
    ===================================================== */
 (function initParticles() {
   const canvas = document.getElementById('particles-canvas');
   const ctx = canvas.getContext('2d');
-  const SHAPES = ['star', 'paw', 'heart', 'spark'];
+  const SHAPES = ['heart', 'paw', 'heart', 'paw', 'spark'];
   let particles = [];
 
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
   window.addEventListener('resize', resize);
 
-  for (let i = 0; i < 28; i++) {
+  const particleCount = window.innerWidth < 720 ? 24 : 40;
+  for (let i = 0; i < particleCount; i++) {
     particles.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: -0.2 - Math.random() * 0.3,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: -0.12 - Math.random() * 0.24,
       size: 10 + Math.random() * 12,
       shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
-      alpha: 0.3 + Math.random() * 0.5,
+      alpha: 0.22 + Math.random() * 0.36,
       phase: Math.random() * Math.PI * 2,
     });
+  }
+
+  function makeGradient(x, y, size, start, end, t, phase) {
+    const shift = Math.sin(t * 0.8 + phase) * size * 0.42;
+    const gradient = ctx.createLinearGradient(x - size + shift, y - size, x + size, y + size + shift);
+    gradient.addColorStop(0, start);
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.72)');
+    gradient.addColorStop(1, end);
+    return gradient;
   }
 
   function drawStar(x, y, size, color) {
@@ -529,15 +797,13 @@ function mascotClick() {
 
   function drawParticle(p, t) {
     const size = p.size * (0.82 + Math.sin(t + p.phase) * 0.12);
-    const colors = {
-      star: '#fff2a3',
-      spark: '#fff8da',
-      paw: '#c8dc98',
-      heart: '#ff8fb0',
-    };
-    if (p.shape === 'paw') drawPaw(p.x, p.y, size, colors.paw);
-    else if (p.shape === 'heart') drawHeart(p.x, p.y, size, colors.heart);
-    else drawStar(p.x, p.y, size, colors[p.shape] || colors.star);
+    if (p.shape === 'paw') {
+      drawPaw(p.x, p.y, size, makeGradient(p.x, p.y, size, '#9cf070', '#ff91bf', t, p.phase));
+    } else if (p.shape === 'heart') {
+      drawHeart(p.x, p.y, size, makeGradient(p.x, p.y, size, '#ff78b4', '#9cf070', t, p.phase));
+    } else {
+      drawStar(p.x, p.y, size, makeGradient(p.x, p.y, size, '#c989ff', '#9cf070', t, p.phase));
+    }
   }
 
   function draw() {
@@ -561,8 +827,8 @@ function mascotClick() {
 /* =====================================================
    INIT
    ===================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-  loadSiteConfig();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadSiteConfig();
   // Set lang
   const savedLang = localStorage.getItem('pistachio-lang') || 'pt';
   currentLang = savedLang;
@@ -570,6 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
   navigate(currentLang === 'pt' ? 'home-pt' : 'home-en');
   applySiteConfig();
   initAdmin();
+  initDraggableMascot();
   updateMusicLabel();
 
   // Try autoplay music

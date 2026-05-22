@@ -7,13 +7,14 @@ Site estatico para links, status de comissoes e apresentacao do projeto Pistachi
 - `index.html`: entrada para deploy, redireciona para a pagina principal.
 - `pistachio-creations.html`: estrutura do site.
 - `style.css`: visual, layout responsivo, icones e mascote.
-- `script.js`: idioma, musica, interacoes, particulas e admin local.
+- `script.js`: idioma, musica, interacoes, particulas, pet arrastavel e admin global.
 - `Fundo.png`: imagem de fundo.
+- `site-config.json`: dados globais editados pelo painel admin.
 - `assets/mascot-normal.png`: mascote no estado normal.
 - `assets/mascot-boop.png`: mascote quando recebe clique/interacao.
 - `assets/profile-icon.jpeg`: imagem usada na foto de perfil.
 
-## Admin local
+## Admin global
 
 Abra o site com `#admin` no final da URL:
 
@@ -34,7 +35,18 @@ O admin permite alterar:
 - prazo medio
 - links de comissao, Discord, TikTok e Instagram
 
-As alteracoes ficam salvas no navegador via `localStorage`. Em um site estatico, isso muda apenas para o navegador onde voce editou. Para um admin que altere o site para todos os visitantes, conecte o projeto a um backend, planilha, CMS ou banco de dados.
+As alteracoes sao salvas em `site-config.json` no repositorio pelo GitHub API. Para salvar ou resetar pelo painel, informe um token do GitHub com permissao de escrita em `Contents` no repositorio `Ke0nXD/pistachio-creations`.
+
+Recomendacao de token:
+
+- use um fine-grained personal access token
+- limite o token apenas a este repositorio
+- habilite `Contents: Read and write`
+- nao publique o token nem salve em codigo
+
+Visitantes apenas leem `site-config.json`; somente quem possui o token consegue gravar alteracoes globais.
+
+Depois de salvar pelo admin, o GitHub cria um commit atualizando `site-config.json`. O site publicado busca esse arquivo com cache desativado, entao novos visitantes passam a ver os dados atualizados.
 
 ## Rodar localmente
 

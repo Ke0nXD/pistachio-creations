@@ -24,7 +24,7 @@
 <button id="lang-btn" onclick="toggleLang()"><span class="nav-icon lang-icon" aria-hidden="true"></span><span id="lang-label">EN</span></button>
 
 <!-- MASCOT -->
-<button id="mascot" class="mascot-button" type="button" onclick="mascotClick()" aria-label="Interagir com o mascote">
+<button id="mascot" class="mascot-button" type="button" aria-label="Interagir e arrastar o pet Pistache" title="Pistache">
   <span class="speech-bubble" id="speech-bubble"></span>
   <span class="mascot-body" aria-hidden="true">
     <img class="mascot-img mascot-img-normal" src="assets/mascot-normal.png" alt="">
@@ -48,14 +48,13 @@
 
         <h1 class="card-title">Pistachio &amp; Creations</h1>
         <p class="card-subtitle">
-          Arte digital • Fursuit maker • Comissões personalizadas
+          Arte digital • Comissões personalizadas • Designs fofos
         </p>
         <p class="card-desc">Um cantinho criativo para personagens fofos, artes únicas e criações feitas com carinho.</p>
 
         <div class="badges">
           <span class="badge green"><span class="icon icon-star" aria-hidden="true"></span> Comissões Abertas</span>
           <span class="badge"><span class="icon icon-heart" aria-hidden="true"></span> Arte Digital</span>
-          <span class="badge"><span class="icon icon-paw" aria-hidden="true"></span> Fursuit Maker</span>
           <span class="badge green"><span class="icon icon-star" aria-hidden="true"></span> Designs Fofos</span>
         </div>
 
@@ -113,14 +112,13 @@
 
         <h1 class="card-title">Pistachio &amp; Creations</h1>
         <p class="card-subtitle">
-          Digital art • Fursuit maker • Custom commissions
+          Digital art • Custom commissions • Cute designs
         </p>
         <p class="card-desc">A cozy creative space for cute characters, unique art and handcrafted creations.</p>
 
         <div class="badges">
           <span class="badge green"><span class="icon icon-star" aria-hidden="true"></span> Open Commissions</span>
           <span class="badge"><span class="icon icon-heart" aria-hidden="true"></span> Digital Artist</span>
-          <span class="badge"><span class="icon icon-paw" aria-hidden="true"></span> Fursuit Maker</span>
           <span class="badge green"><span class="icon icon-star" aria-hidden="true"></span> Cute Designs</span>
         </div>
 
@@ -196,8 +194,7 @@
           <div class="comm-card"><span class="comm-card-icon gallery-mark-star" aria-hidden="true"></span><div class="comm-card-name">Corpo inteiro</div><div class="comm-card-price">ver preço →</div></div>
           <div class="comm-card"><span class="comm-card-icon gallery-mark-doc" aria-hidden="true"></span><div class="comm-card-name">Reference sheet</div><div class="comm-card-price">ver preço →</div></div>
           <div class="comm-card"><span class="comm-card-icon gallery-mark-brush" aria-hidden="true"></span><div class="comm-card-name">Design de personagem</div><div class="comm-card-price">ver preço →</div></div>
-          <div class="comm-card"><span class="comm-card-icon icon-paw" aria-hidden="true"></span><div class="comm-card-name">Partes de fursuit</div><div class="comm-card-price">ver preço →</div></div>
-          <div class="comm-card" style="grid-column:span 2;"><span class="comm-card-icon shape-spark" aria-hidden="true"></span><div class="comm-card-name">Criação personalizada</div><div class="comm-card-price">ver preço →</div></div>
+          <div class="comm-card"><span class="comm-card-icon shape-spark" aria-hidden="true"></span><div class="comm-card-name">Criação personalizada</div><div class="comm-card-price">ver preço →</div></div>
         </div>
       </div>
 
@@ -252,8 +249,7 @@
           <div class="comm-card"><span class="comm-card-icon gallery-mark-star" aria-hidden="true"></span><div class="comm-card-name">Full Body</div><div class="comm-card-price">see price →</div></div>
           <div class="comm-card"><span class="comm-card-icon gallery-mark-doc" aria-hidden="true"></span><div class="comm-card-name">Reference Sheet</div><div class="comm-card-price">see price →</div></div>
           <div class="comm-card"><span class="comm-card-icon gallery-mark-brush" aria-hidden="true"></span><div class="comm-card-name">Character Design</div><div class="comm-card-price">see price →</div></div>
-          <div class="comm-card"><span class="comm-card-icon icon-paw" aria-hidden="true"></span><div class="comm-card-name">Fursuit Parts</div><div class="comm-card-price">see price →</div></div>
-          <div class="comm-card" style="grid-column:span 2;"><span class="comm-card-icon shape-spark" aria-hidden="true"></span><div class="comm-card-name">Custom Creation</div><div class="comm-card-price">see price →</div></div>
+          <div class="comm-card"><span class="comm-card-icon shape-spark" aria-hidden="true"></span><div class="comm-card-name">Custom Creation</div><div class="comm-card-price">see price →</div></div>
         </div>
       </div>
 
@@ -287,10 +283,18 @@
     <div class="admin-header">
       <div>
         <h2>Admin</h2>
-        <p>Controle rápido das comissões.</p>
+        <p>Controle global das comissões.</p>
       </div>
       <button id="admin-close-btn" class="admin-icon-btn" type="button" aria-label="Fechar admin"></button>
     </div>
+
+    <p id="admin-persist-status" class="admin-persist-status">Os dados são carregados de site-config.json.</p>
+
+    <label>
+      Token do GitHub
+      <input id="admin-github-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+      <small>Necessário para salvar ou resetar globalmente. O token não fica gravado no site.</small>
+    </label>
 
     <label class="admin-toggle">
       <input id="admin-commission-open" type="checkbox">
@@ -336,8 +340,8 @@
     </label>
 
     <div class="admin-actions">
-      <button class="admin-save" type="submit">Salvar</button>
-      <button id="admin-reset-btn" class="admin-reset" type="button">Resetar</button>
+      <button class="admin-save" type="submit">Salvar global</button>
+      <button id="admin-reset-btn" class="admin-reset" type="button">Resetar global</button>
     </div>
   </form>
 </aside>
