@@ -519,10 +519,10 @@ function playClick() {
 /* =====================================================
    CLICK PARTICLES
    ===================================================== */
-const PARTICLE_SHAPES = ['shape-star', 'shape-heart', 'shape-paw', 'shape-spark'];
+const PARTICLE_SHAPES = ['shape-heart', 'shape-paw'];
 document.addEventListener('click', function(e) {
   if (e.target.closest('#music-btn, #lang-btn, .back-btn, button')) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       setTimeout(() => spawnParticle(e.clientX, e.clientY), i * 60);
     }
   }
@@ -531,9 +531,9 @@ function spawnParticle(x, y) {
   const p = document.createElement('div');
   const shape = PARTICLE_SHAPES[Math.floor(Math.random() * PARTICLE_SHAPES.length)];
   p.className = `click-particle ${shape}`;
-  p.style.left = (x + (Math.random()-0.5)*30) + 'px';
+  p.style.left = (x + (Math.random()-0.5)*22) + 'px';
   p.style.top = y + 'px';
-  p.style.animationDuration = (0.6 + Math.random() * 0.4) + 's';
+  p.style.animationDuration = (0.55 + Math.random() * 0.25) + 's';
   document.body.appendChild(p);
   setTimeout(() => p.remove(), 1100);
 }
@@ -710,7 +710,7 @@ function initDraggableMascot() {
 (function initParticles() {
   const canvas = document.getElementById('particles-canvas');
   const ctx = canvas.getContext('2d');
-  const SHAPES = ['heart', 'paw', 'heart', 'paw', 'spark'];
+  const SHAPES = ['heart', 'paw', 'heart', 'paw'];
   let particles = [];
 
   function resize() {
@@ -724,16 +724,16 @@ function initDraggableMascot() {
   resize();
   window.addEventListener('resize', resize);
 
-  const particleCount = window.innerWidth < 720 ? 24 : 40;
+  const particleCount = window.innerWidth < 720 ? 10 : 18;
   for (let i = 0; i < particleCount; i++) {
     particles.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.22,
-      vy: -0.12 - Math.random() * 0.24,
-      size: 10 + Math.random() * 12,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: -0.06 - Math.random() * 0.12,
+      size: 5 + Math.random() * 6,
       shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
-      alpha: 0.22 + Math.random() * 0.36,
+      alpha: 0.1 + Math.random() * 0.18,
       phase: Math.random() * Math.PI * 2,
     });
   }
@@ -810,7 +810,7 @@ function initDraggableMascot() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const t = Date.now() / 1000;
     particles.forEach(p => {
-      p.x += p.vx + Math.sin(t + p.phase) * 0.15;
+      p.x += p.vx + Math.sin(t + p.phase) * 0.05;
       p.y += p.vy;
       if (p.y < -30) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
       if (p.x < -30) p.x = canvas.width + 20;
