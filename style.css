@@ -2886,3 +2886,39 @@ body {
     radial-gradient(circle at 85% 20%, #4f5bd5 0 22%, transparent 44%),
     linear-gradient(45deg, #feda75 0%, #fa7e1e 22%, #d62976 48%, #962fbf 72%, #4f5bd5 100%) !important;
 }
+
+/* ===== CLEAN PAW / HEART PARTICLE ART ===== */
+.main-card::after {
+  width: 76px !important;
+  height: 76px !important;
+  left: 30px !important;
+  bottom: 30px !important;
+  background: url("assets/icons/paw.svg") center / contain no-repeat !important;
+  opacity: 0.42 !important;
+  transform: rotate(-10deg);
+  filter: drop-shadow(0 7px 8px rgba(45, 26, 56, 0.18)) !important;
+}
+
+.click-particle.shape-heart,
+.click-particle.shape-paw {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.click-particle.shape-heart {
+  background-image: url("assets/icons/particle-heart-green.svg");
+  filter: drop-shadow(0 2px 3px rgba(45, 26, 56, 0.18));
+}
+
+.click-particle.shape-paw {
+  background-image: url("assets/icons/particle-paw-pink.svg");
+  filter: drop-shadow(0 2px 3px rgba(45, 26, 56, 0.18));
+}
+
+.click-particle.shape-heart::before,
+.click-particle.shape-heart::after,
+.click-particle.shape-paw::before,
+.click-particle.shape-paw::after {
+  content: none !important;
+}
