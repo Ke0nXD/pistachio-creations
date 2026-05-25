@@ -4,3 +4,12 @@ codex.txt
 .DS_Store
 Thumbs.db
 desktop.ini
+node_modules/
+.next/
+out/
+.env
+.env.local
+.env.*.local
+!.env.example
+*.tsbuildinfo
+.qa/
